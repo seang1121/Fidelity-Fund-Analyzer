@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Analyzer | 6 Investment Strategies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #764ba2;
+            margin: 20px 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .strategy-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .strategy-card.selected {
+            border: 3px solid #28a745;
+        }
+        
+        .emoji {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .strategy-card h3 {
+            color: white;
+            margin: 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .return-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 10px 5px;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+        
+        .drawdown-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .best-for {
+            font-size: 0.9em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        .strategy-detail {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .allocation-table {
+            width: 100%;
+            margin: 15px 0;
+        }
+        
+        .allocation-table tr:first-child th {
+            background: #764ba2;
+        }
+        
+        .allocation-bar {
+            width: 100%;
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        
+        .allocation-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .fund-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .fund-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .fund-name {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .fund-details {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .comparison-table {
+            overflow-x: auto;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 15px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .button:hover {
+            background: #764ba2;
+        }
+        
+        .footer {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+        
+        .recommendation {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .toggle-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .toggle-btn:hover {
+            background: #764ba2;
+        }
+        
+        .toggle-btn.active {
+            background: #28a745;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            .strategy-card {
+                padding: 15px;
+            }
+            
+            .emoji {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Portfolio Analyzer</h1>
+            <p class="subtitle">Compare 6 Investment Strategies: Conservative → Moonshot</p>
+            <p style="color: #999; margin-top: 10px; font-size: 0.9em;">Fidelity Mutual Funds + ETFs | 30+ Investments | Updated Feb 2026</p>
+        </header>
+
+        <!-- Quick Strategy Comparison -->
+        <div class="card">
+            <h2>🎯 Pick Your Strategy</h2>
+            <p style="margin-bottom: 20px;">Click a strategy to view full allocation details:</p>
+            
+            <div class="strategy-grid">
+                <div class="strategy-card" onclick="showStrategy(1)">
+                    <div class="emoji">🛡️</div>
+                    <h3>Conservative</h3>
+                    <div class="return-badge">5-7%</div>
+                    <div class="drawdown-badge">-15%</div>
+                    <div class="best-for">Income-focused, near retirement</div>
+                </div>
+
+                <div class="strategy-card" onclick="showStrategy(2)">
+                    <div class="emoji">🎯</div>
+                    <h3>Moderate</h3>
+                    <div class="return-badge">8-12%</div>
+                    <div class="drawdown-badge">-25%</div>
+                    <div class="best-for">Balanced growth, mid-career</div>
+                </div>
+
+                <div class="strategy-card" onclick="showStrategy(3)">
+                    <div class="emoji">📈</div>
+                    <h3>Growth</h3>
+                    <div class="return-badge">12-18%</div>
+                    <div class="drawdown-badge">-35%</div>
+                    <div class="best-for">Medium risk, 3-5 years</div>
+                </div>
+
+                <div class="strategy-card" onclick="showStrategy(4)">
+                    <div class="emoji">🚀</div>
+                    <h3>Aggressive</h3>
+                    <div class="return-badge">25-40%</div>
+                    <div class="drawdown-badge">-50%</div>
+                    <div class="best-for">High risk tolerance, young</div>
+                </div>
+
+                <div class="strategy-card" onclick="showStrategy(5)">
+                    <div class="emoji">💥</div>
+                    <h3>Moonshot</h3>
+                    <div class="return-badge">60-150%+</div>
+                    <div class="drawdown-badge">-70%+</div>
+                    <div class="best-for">Extreme risk, YOLO mindset</div>
+                </div>
+
+                <div class="strategy-card" onclick="showStrategy(6)">
+                    <div class="emoji">🌍</div>
+                    <h3>Global Diversified</h3>
+                    <div class="return-badge">10-16%</div>
+                    <div class="drawdown-badge">-30%</div>
+                    <div class="best-for">International exposure</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Strategies Comparison Table -->
+        <div class="card">
+            <h2>📋 All Strategies Comparison</h2>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Expected Return</th>
+                            <th>Max Drawdown</th>
+                            <th>Time Horizon</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🛡️ Conservative</td>
+                            <td><strong>5-7%</strong></td>
+                            <td>-15%</td>
+                            <td>1-3 years</td>
+                            <td>Low</td>
+                        </tr>
+                        <tr>
+                            <td>🎯 Moderate</td>
+                            <td><strong>8-12%</strong></td>
+                            <td>-25%</td>
+                            <td>2-5 years</td>
+                            <td>Moderate</td>
+                        </tr>
+                        <tr>
+                            <td>📈 Growth</td>
+                            <td><strong>12-18%</strong></td>
+                            <td>-35%</td>
+                            <td>3-5 years</td>
+                            <td>Moderate-High</td>
+                        </tr>
+                        <tr>
+                            <td>🚀 Aggressive</td>
+                            <td><strong>25-40%</strong></td>
+                            <td>-50%</td>
+                            <td>3-5 years</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td>💥 Moonshot</td>
+                            <td><strong>60-150%+</strong></td>
+                            <td>-70%+</td>
+                            <td>3-7 years</td>
+                            <td>Extreme</td>
+                        </tr>
+                        <tr>
+                            <td>🌍 Global Diversified</td>
+                            <td><strong>10-16%</strong></td>
+                            <td>-30%</td>
+                            <td>3-5 years</td>
+                            <td>Moderate-High</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Strategy 1: Conservative -->
+        <div class="card strategy-detail" id="strategy-1" style="display: none;">
+            <h2>🛡️ Conservative Strategy</h2>
+            <p><strong>Capital Preservation + Steady Income</strong></p>
+            <p style="margin-top: 10px; color: #666;">Bonds + dividend stocks, minimal volatility. Best for: Risk-averse, income-focused, near retirement</p>
+            
+            <h3 style="margin-top: 20px;">Expected Annual Return: 5-7%</h3>
+            <p>Max Drawdown: -15% worst case | Time Horizon: 1-3 years</p>
+            
+            <h3 style="margin-top: 20px;">$10,000 Investment Projection (1-Year)</h3>
+            <table style="margin: 15px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td><strong>Initial Investment</strong></td>
+                    <td style="text-align: right;"><strong>$10,000</strong></td>
+                </tr>
+                <tr>
+                    <td>Projected Growth (5-7%)</td>
+                    <td style="text-align: right;"><strong>+$500-700</strong></td>
+                </tr>
+                <tr style="background: #d4edda;">
+                    <td><strong>Final Value</strong></td>
+                    <td style="text-align: right;"><strong>$10,500-10,700</strong></td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 20px;">Portfolio Allocation</h3>
+            <div style="margin: 15px 0;">
+                <div style="margin: 15px 0;">
+                    <strong>FBNDX (Fidelity Bond Fund)</strong> - 40%
+                    <div class="allocation-bar"><div class="allocation-fill" style="width: 40%;">40%</div></div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>FTABX (Fidelity Total Bond Fund)</strong> - 20%
+                    <div class="allocation-bar"><div class="allocation-fill" style="width: 20%;">20%</div></div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>FAGIX (Fidelity Dividend Growth Fund)</strong> - 15%
+                    <div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>SCHD (Schwab U.S. Dividend Equity ETF)</strong> - 15%
+                    <div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>FXAIX (Fidelity Total Market Index)</strong> - 10%
+                    <div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy 2: Moderate -->
+        <div class="card strategy-detail" id="strategy-2" style="display: none;">
+            <h2>🎯 Moderate Strategy</h2>
+            <p><strong>Balanced Growth + Income</strong></p>
+            <p style="margin-top: 10px; color: #666;">60/40 stocks-bonds, steady growth with downside protection. Best for: Balanced growth, mid-career, 401k alternative</p>
+            
+            <h3 style="margin-top: 20px;">Expected Annual Return: 8-12%</h3>
+            <p>Max Drawdown: -25% worst case | Time Horizon: 2-5 years</p>
+            
+            <h3 style="margin-top: 20px;">$10,000 Investment Projection (1-Year)</h3>
+            <table style="margin: 15px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td><strong>Initial Investment</strong></td>
+                    <td style="text-align: right;"><strong>$10,000</strong></td>
+                </tr>
+                <tr>
+                    <td>Projected Growth (8-12%)</td>
+                    <td style="text-align: right;"><strong>+$800-1,200</strong></td>
+                </tr>
+                <tr style="background: #d4edda;">
+                    <td><strong>Final Value</strong></td>
+                    <td style="text-align: right;"><strong>$10,800-11,200</strong></td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 20px;">Portfolio Allocation</h3>
+            <div style="margin: 15px 0;">
+                <div style="margin: 15px 0;"><strong>FSKAX (Fidelity Balanced Fund)</strong> - 25%<div class="allocation-bar"><div class="allocation-fill" style="width: 25%;">25%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FXAIX (Fidelity Total Market Index)</strong> - 20%<div class="allocation-bar"><div class="allocation-fill" style="width: 20%;">20%</div></div></div>
+                <div style="margin: 15px 0;"><strong>BND (Vanguard Total Bond Market ETF)</strong> - 20%<div class="allocation-bar"><div class="allocation-fill" style="width: 20%;">20%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FAGIX (Fidelity Dividend Growth Fund)</strong> - 15%<div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div></div>
+                <div style="margin: 15px 0;"><strong>VXUS (Vanguard International Stock ETF)</strong> - 10%<div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+                <div style="margin: 15px 0;"><strong>SCHD (Schwab U.S. Dividend Equity ETF)</strong> - 10%<div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+            </div>
+        </div>
+
+        <!-- Strategy 3: Growth -->
+        <div class="card strategy-detail" id="strategy-3" style="display: none;">
+            <h2>📈 Growth Strategy</h2>
+            <p><strong>Solid Growth + Diversification</strong></p>
+            <p style="margin-top: 10px; color: #666;">Growth stocks + sectors + international, some bonds. Best for: Growth-oriented, medium risk tolerance, 3-5 year horizon</p>
+            
+            <h3 style="margin-top: 20px;">Expected Annual Return: 12-18%</h3>
+            <p>Max Drawdown: -35% worst case | Time Horizon: 3-5 years</p>
+            
+            <h3 style="margin-top: 20px;">$10,000 Investment Projection (1-Year)</h3>
+            <table style="margin: 15px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td><strong>Initial Investment</strong></td>
+                    <td style="text-align: right;"><strong>$10,000</strong></td>
+                </tr>
+                <tr>
+                    <td>Projected Growth (12-18%)</td>
+                    <td style="text-align: right;"><strong>+$1,200-1,800</strong></td>
+                </tr>
+                <tr style="background: #d4edda;">
+                    <td><strong>Final Value</strong></td>
+                    <td style="text-align: right;"><strong>$11,200-11,800</strong></td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 20px;">Portfolio Allocation</h3>
+            <div style="margin: 15px 0;">
+                <div style="margin: 15px 0;"><strong>FFVTX (Fidelity Large Cap Growth)</strong> - 18%<div class="allocation-bar"><div class="allocation-fill" style="width: 18%;">18%</div></div></div>
+                <div style="margin: 15px 0;"><strong>QQQ (Invesco QQQ Trust)</strong> - 15%<div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FXAIX (Fidelity Total Market Index)</strong> - 15%<div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div></div>
+                <div style="margin: 15px 0;"><strong>BND (Vanguard Total Bond ETF)</strong> - 15%<div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FBIOX (Fidelity Select Technology)</strong> - 10%<div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+                <div style="margin: 15px 0;"><strong>IEMG (iShares MSCI Emerging Markets ETF)</strong> - 10%<div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+                <div style="margin: 15px 0;"><strong>ICLN (iShares Global Clean Energy ETF)</strong> - 9%<div class="allocation-bar"><div class="allocation-fill" style="width: 9%;">9%</div></div></div>
+                <div style="margin: 15px 0;"><strong>SCHD (Schwab U.S. Dividend Equity ETF)</strong> - 8%<div class="allocation-bar"><div class="allocation-fill" style="width: 8%;">8%</div></div></div>
+            </div>
+        </div>
+
+        <!-- Strategy 4: Aggressive -->
+        <div class="card strategy-detail" id="strategy-4" style="display: none;">
+            <h2>🚀 Aggressive Strategy</h2>
+            <p><strong>High Growth + Concentrated Bets</strong></p>
+            <p style="margin-top: 10px; color: #666;">Growth + sectors + emerging markets, minimal bonds. Best for: Aggressive growth, high risk tolerance, young investor</p>
+            
+            <h3 style="margin-top: 20px;">Expected Annual Return: 25-40%</h3>
+            <p>Max Drawdown: -50% worst case | Time Horizon: 3-5 years</p>
+            
+            <h3 style="margin-top: 20px;">$10,000 Investment Projection (1-Year)</h3>
+            <table style="margin: 15px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td><strong>Initial Investment</strong></td>
+                    <td style="text-align: right;"><strong>$10,000</strong></td>
+                </tr>
+                <tr>
+                    <td>Projected Growth (25-40%)</td>
+                    <td style="text-align: right;"><strong>+$2,500-4,000</strong></td>
+                </tr>
+                <tr style="background: #d4edda;">
+                    <td><strong>Final Value</strong></td>
+                    <td style="text-align: right;"><strong>$12,500-14,000</strong></td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 20px;">Top 5 Holdings (80% of portfolio)</h3>
+            <div style="margin: 15px 0;">
+                <div style="margin: 15px 0;"><strong>QQQ</strong> - 18% (Tech ETF) <div class="allocation-bar"><div class="allocation-fill" style="width: 18%;">18%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FBIOX</strong> - 12% (Fidelity Tech Sector) <div class="allocation-bar"><div class="allocation-fill" style="width: 12%;">12%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FFVTX</strong> - 12% (Large Cap Growth) <div class="allocation-bar"><div class="allocation-fill" style="width: 12%;">12%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FLPSX</strong> - 10% (Growth Company Fund) <div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+                <div style="margin: 15px 0;"><strong>SMH</strong> - 10% (Semiconductor ETF) <div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+            </div>
+        </div>
+
+        <!-- Strategy 5: Moonshot -->
+        <div class="card strategy-detail" id="strategy-5" style="display: none;">
+            <h2>💥 Moonshot Strategy</h2>
+            <p><strong>Maximum Growth + Crypto + Leverage</strong></p>
+            <p style="margin-top: 10px; color: #666;">Bleeding-edge tech, crypto, leverage, maximum volatility. Best for: Moonshot bets, extreme risk tolerance, YOLO mindset</p>
+            
+            <h3 style="margin-top: 20px;">Expected Annual Return: 60-150%+ (or -50%+)</h3>
+            <p>Max Drawdown: -70%+ worst case | Time Horizon: 3-7 years</p>
+            
+            <h3 style="margin-top: 20px;">$10,000 Investment Projection (1-Year)</h3>
+            <table style="margin: 15px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td><strong>Initial Investment</strong></td>
+                    <td style="text-align: right;"><strong>$10,000</strong></td>
+                </tr>
+                <tr>
+                    <td>Projected Growth (60-150%+)</td>
+                    <td style="text-align: right;"><strong>+$6,000-15,000</strong></td>
+                </tr>
+                <tr style="background: #ffe6e6;">
+                    <td><strong>Final Value (Best Case)</strong></td>
+                    <td style="text-align: right;"><strong>$16,000-25,000</strong></td>
+                </tr>
+                <tr style="background: #ffe6e6;">
+                    <td><strong>Final Value (Worst Case)</strong></td>
+                    <td style="text-align: right;"><strong>$3,000-5,000</strong></td>
+                </tr>
+            </table>
+
+            <div class="alert">
+                <strong>⚠️ EXTREME RISK:</strong> This strategy can lose 50-70%+ in bear markets. Only invest what you can afford to lose. 
+                Not recommended for most investors.
+            </div>
+
+            <h3 style="margin-top: 20px;">Core Holdings</h3>
+            <div style="margin: 15px 0;">
+                <div style="margin: 15px 0;"><strong>IBIT (iShares Bitcoin Mini Trust)</strong> - 20% <div class="allocation-bar"><div class="allocation-fill" style="width: 20%;">20%</div></div></div>
+                <div style="margin: 15px 0;"><strong>ARKK (ARK Innovation ETF)</strong> - 15% <div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div></div>
+                <div style="margin: 15px 0;"><strong>QQQ (Invesco QQQ Trust)</strong> - 15% <div class="allocation-bar"><div class="allocation-fill" style="width: 15%;">15%</div></div></div>
+                <div style="margin: 15px 0;"><strong>FSHBX (Fidelity Semiconductors)</strong> - 12% <div class="allocation-bar"><div class="allocation-fill" style="width: 12%;">12%</div></div></div>
+                <div style="margin: 15px 0;"><strong>SMH (Semiconductor ETF)</strong> - 10% <div class="allocation-bar"><div class="allocation-fill" style="width: 10%;">10%</div></div></div>
+            </div>
+        </div>
+
+        <!-- Strategy 6: Global -->
+        <div class="card strategy-detail" id="strategy-6" style="display: none;">
+            <h2>🌍 Global Diversified Strategy</h2>
+            <p><strong>Balanced Global + Sector Rotation</strong></p>
+            <p style="margin-top: 10px; color: #666;">US/International blend, reduced single-country risk. Best for: Currency hedging, emerging market exposure, global diversification</p>
+            
+            <h3 style="margin-top: 20px;">Expected Annual Return: 10-16%</h3>
+            <p>Max Drawdown: -30% worst case | Time Horizon: 3-5 years</p>
+            
+            <h3 style="margin-top: 20px;">$10,000 Investment Projection (1-Year)</h3>
+            <table style="margin: 15px 0;">
+                <tr style="background: #f0f0f0;">
+                    <td><strong>Initial Investment</strong></td>
+                    <td style="text-align: right;"><strong>$10,000</strong></td>
+                </tr>
+                <tr>
+                    <td>Projected Growth (10-16%)</td>
+                    <td style="text-align: right;"><strong>+$1,000-1,600</strong></td>
+                </tr>
+                <tr style="background: #d4edda;">
+                    <td><strong>Final Value</strong></td>
+                    <td style="text-align: right;"><strong>$11,000-11,600</strong></td>
+                </tr>
+            </table>
+
+            <h3 style="margin-top: 20px;">Portfolio Allocation (Geographic Balance)</h3>
+            <div style="margin: 15px 0;">
+                <div style="margin: 15px 0;"><strong>US Exposure (55%)</strong><div class="allocation-bar"><div class="allocation-fill" style="width: 55%;">55%</div></div></div>
+                <div style="margin: 15px 0;"><strong>International (25%)</strong><div class="allocation-bar"><div class="allocation-fill" style="width: 25%;">25%</div></div></div>
+                <div style="margin: 15px 0;"><strong>Emerging Markets (12%)</strong><div class="allocation-bar"><div class="allocation-fill" style="width: 12%;">12%</div></div></div>
+                <div style="margin: 15px 0;"><strong>Bonds (8%)</strong><div class="allocation-bar"><div class="allocation-fill" style="width: 8%;">8%</div></div></div>
+            </div>
+        </div>
+
+        <!-- Investment Principles -->
+        <div class="card">
+            <h2>📌 Key Investment Principles</h2>
+            
+            <h3>Dollar-Cost Averaging</h3>
+            <p>Don't invest lump sum. Spread $10K over 3-4 months to reduce timing risk.</p>
+            
+            <h3>Rebalancing</h3>
+            <p>Review quarterly. Rebalance when any position deviates >20% from target.</p>
+            
+            <h3>Emergency Fund First</h3>
+            <p>Keep 6 months expenses in safe funds BEFORE aggressive strategies.</p>
+            
+            <h3>Fidelity vs ETFs</h3>
+            <p>Fidelity funds offer expertise; ETFs offer low costs. Mix both for balance.</p>
+            
+            <h3>Monitoring Schedule</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li>✓ Conservative/Moderate: Quarterly</li>
+                <li>✓ Growth/Aggressive: Monthly</li>
+                <li>✓ Moonshot: Weekly (high volatility)</li>
+            </ul>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card">
+            <h2>💡 Who Should Choose What?</h2>
+            
+            <div class="recommendation">
+                <strong>🛡️ Conservative Strategy</strong><br>
+                Risk-averse savers, those nearing retirement, want steady income over growth.
+            </div>
+
+            <div class="recommendation">
+                <strong>🎯 Moderate Strategy</strong><br>
+                Mid-career professionals, comfortable with some volatility, 2-5 year horizon.
+            </div>
+
+            <div class="recommendation">
+                <strong>📈 Growth Strategy (POPULAR)</strong><br>
+                Young professionals, 3-5 year horizon, can handle -35% drawdowns.
+            </div>
+
+            <div class="recommendation">
+                <strong>🚀 Aggressive Strategy (SEAN'S PROFILE)</strong><br>
+                High risk tolerance, young, 3-5 year horizon, want real growth.
+            </div>
+
+            <div class="recommendation">
+                <strong>💥 Moonshot Strategy (EXTREME)</strong><br>
+                Only if you can afford total loss, extreme risk tolerance, long horizon (5+ years).
+            </div>
+
+            <div class="recommendation">
+                <strong>🌍 Global Diversified</strong><br>
+                Want international exposure, hedge against US-only risk.
+            </div>
+        </div>
+
+        <!-- GitHub Link -->
+        <div class="card" style="text-align: center;">
+            <h2>🔧 Run Locally or View Full Report</h2>
+            <p>Want detailed analysis, custom amounts, or to download data?</p>
+            <a href="https://github.com/seang1121/Fidelity-Fund-Analyzer" class="button">View on GitHub</a>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+                Run Python analyzer • Customize principal • Export detailed reports • GitHub Actions weekly auto-reports
+            </p>
+        </div>
+
+        <div class="footer">
+            <p><strong>Portfolio Analyzer</strong> | 6 Strategies | 30+ Investments | Feb 2026</p>
+            <p>Fidelity Mutual Funds + ETFs | Data for illustration. Verify current rates before investing.</p>
+            <p>GitHub: <a href="https://github.com/seang1121/Fidelity-Fund-Analyzer" style="color: #667eea; text-decoration: none;">seang1121/Fidelity-Fund-Analyzer</a></p>
+        </div>
+    </div>
+
+    <script>
+        function showStrategy(num) {
+            // Hide all strategies
+            for (let i = 1; i <= 6; i++) {
+                const elem = document.getElementById(`strategy-${i}`);
+                if (elem) elem.style.display = 'none';
+            }
+            // Show selected strategy
+            const selected = document.getElementById(`strategy-${num}`);
+            if (selected) selected.style.display = 'block';
+            // Smooth scroll to strategy
+            selected.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
