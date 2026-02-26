@@ -3,6 +3,12 @@
 Comprehensive Portfolio Analyzer
 Stocks + ETFs + Mutual Funds
 6 Strategy Archetypes: Conservative → Moonshot
+
+⚠️ DISCLAIMER:
+This tool is for educational purposes only and does NOT constitute financial advice.
+Projections are hypothetical based on historical data. Past performance does not guarantee future results.
+Before making any investment decisions, consult with a licensed financial advisor, tax professional, or 
+investment advisor who understands your personal situation, risk tolerance, and financial goals.
 """
 
 import sys
