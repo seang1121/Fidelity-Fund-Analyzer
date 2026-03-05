@@ -4,8 +4,12 @@ import { useState } from "react";
 import { runMonteCarlo } from "@/lib/api-client";
 import { useApi } from "@/hooks/use-api";
 import TickerInput from "@/components/ui/ticker-input";
+import SmartMetricCard from "@/components/ui/smart-metric-card";
 import MetricCard from "@/components/ui/metric-card";
 import MonteCarloChart from "@/components/charts/monte-carlo-chart";
+import RecommendationPanel from "@/components/ui/recommendation-panel";
+import { generateMonteCarloRecommendations } from "@/lib/recommendation-engine";
+import type { MonteCarloRequest } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 
 export default function MonteCarloPage() {
@@ -18,17 +22,19 @@ export default function MonteCarloPage() {
 
   const { data, loading, error, execute } = useApi(runMonteCarlo);
 
+  const params: MonteCarloRequest = {
+    tickers,
+    initial_investment: initial,
+    time_horizon_years: years,
+    monthly_contribution: monthly,
+    monthly_withdrawal: withdrawal,
+    target_value: target || undefined,
+    num_simulations: 10000,
+  };
+
   async function handleRun() {
     if (tickers.length === 0) return;
-    await execute({
-      tickers,
-      initial_investment: initial,
-      time_horizon_years: years,
-      monthly_contribution: monthly,
-      monthly_withdrawal: withdrawal,
-      target_value: target || undefined,
-      num_simulations: 10000,
-    });
+    await execute(params);
   }
 
   return (
@@ -142,15 +148,19 @@ export default function MonteCarloPage() {
           </div>
 
           <div className="mb-4 grid gap-3 sm:grid-cols-3">
-            <MetricCard
-              label="Probability of Loss"
-              value={`${data.prob_loss}%`}
+            <SmartMetricCard
+              metricKey="prob_loss"
+              value={data.prob_loss / 100}
+              rawLabel="Probability of Loss"
+              rawValue={`${data.prob_loss}%`}
               color={data.prob_loss > 30 ? "red" : "amber"}
             />
             {data.prob_target !== null && (
-              <MetricCard
-                label="Probability of Target"
-                value={`${data.prob_target}%`}
+              <SmartMetricCard
+                metricKey="prob_target"
+                value={data.prob_target / 100}
+                rawLabel="Probability of Target"
+                rawValue={`${data.prob_target}%`}
                 color={data.prob_target > 50 ? "green" : "amber"}
               />
             )}
@@ -159,6 +169,13 @@ export default function MonteCarloPage() {
           <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
             <MonteCarloChart data={data} />
           </div>
+
+          <RecommendationPanel
+            recommendations={generateMonteCarloRecommendations(
+              { ...data, prob_loss: data.prob_loss / 100, prob_target: data.prob_target !== null ? data.prob_target / 100 : null },
+              params,
+            )}
+          />
         </div>
       )}
     </div>

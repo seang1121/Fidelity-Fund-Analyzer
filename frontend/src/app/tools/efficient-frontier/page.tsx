@@ -6,6 +6,8 @@ import { useApi } from "@/hooks/use-api";
 import TickerInput from "@/components/ui/ticker-input";
 import MetricCard from "@/components/ui/metric-card";
 import EfficientFrontierChart from "@/components/charts/efficient-frontier-chart";
+import RecommendationPanel from "@/components/ui/recommendation-panel";
+import { generateOptimizationRecommendations } from "@/lib/recommendation-engine";
 import { formatPct } from "@/lib/utils";
 
 export default function EfficientFrontierPage() {
@@ -106,6 +108,10 @@ export default function EfficientFrontierPage() {
           <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
             <EfficientFrontierChart data={data} />
           </div>
+
+          <RecommendationPanel
+            recommendations={generateOptimizationRecommendations(data)}
+          />
         </div>
       )}
     </div>

@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { analyzeDividend } from "@/lib/api-client";
 import { useApi } from "@/hooks/use-api";
+import SmartMetricCard from "@/components/ui/smart-metric-card";
 import MetricCard from "@/components/ui/metric-card";
+import RecommendationPanel from "@/components/ui/recommendation-panel";
+import { generateDividendRecommendations } from "@/lib/recommendation-engine";
 import type { DividendAnalysis } from "@/lib/types";
 import { formatCurrency, formatPct } from "@/lib/utils";
 
@@ -75,6 +78,8 @@ function DividendResults({ data }: { data: DividendAnalysis }) {
         ? "red"
         : "amber";
 
+  const recommendations = generateDividendRecommendations(data);
+
   return (
     <div>
       <h2 className="mb-4 text-xl font-semibold text-white">
@@ -86,9 +91,11 @@ function DividendResults({ data }: { data: DividendAnalysis }) {
           label="Current Price"
           value={formatCurrency(data.current_price)}
         />
-        <MetricCard
-          label="Dividend Yield"
-          value={data.dividend_yield ? formatPct(data.dividend_yield) : "N/A"}
+        <SmartMetricCard
+          metricKey="dividend_yield"
+          value={data.dividend_yield}
+          rawLabel="Dividend Yield"
+          rawValue={data.dividend_yield ? formatPct(data.dividend_yield) : "N/A"}
           color="amber"
         />
         <MetricCard
@@ -100,9 +107,11 @@ function DividendResults({ data }: { data: DividendAnalysis }) {
           }
           color="amber"
         />
-        <MetricCard
-          label="Payout Ratio"
-          value={data.payout_ratio ? formatPct(data.payout_ratio) : "N/A"}
+        <SmartMetricCard
+          metricKey="payout_ratio"
+          value={data.payout_ratio}
+          rawLabel="Payout Ratio"
+          rawValue={data.payout_ratio ? formatPct(data.payout_ratio) : "N/A"}
           subtitle="< 60% is healthy"
           color={
             data.payout_ratio
@@ -118,7 +127,7 @@ function DividendResults({ data }: { data: DividendAnalysis }) {
         <MetricCard
           label="Sustainability"
           value={data.sustainability_score}
-          color={sustainColor}
+          color={sustainColor as "green" | "amber" | "red"}
         />
         <MetricCard
           label="DDM Fair Value"
@@ -128,12 +137,12 @@ function DividendResults({ data }: { data: DividendAnalysis }) {
               : "N/A"
           }
           subtitle={data.ddm_fair_value ? `vs ${formatCurrency(data.current_price)} market` : "No dividend data"}
-          color={valColor}
+          color={valColor as "green" | "amber" | "red"}
         />
         <MetricCard
           label="Valuation"
           value={data.valuation}
-          color={valColor}
+          color={valColor as "green" | "amber" | "red"}
         />
       </div>
 
@@ -197,6 +206,8 @@ function DividendResults({ data }: { data: DividendAnalysis }) {
           </div>
         </div>
       )}
+
+      <RecommendationPanel recommendations={recommendations} />
     </div>
   );
 }

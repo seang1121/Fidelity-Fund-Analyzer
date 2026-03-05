@@ -4,7 +4,9 @@ import { useState } from "react";
 import { getRiskMetrics } from "@/lib/api-client";
 import { useApi } from "@/hooks/use-api";
 import TickerInput from "@/components/ui/ticker-input";
-import MetricCard from "@/components/ui/metric-card";
+import SmartMetricCard from "@/components/ui/smart-metric-card";
+import RecommendationPanel from "@/components/ui/recommendation-panel";
+import { generateRiskRecommendations } from "@/lib/recommendation-engine";
 import type { RiskMetricsResponse } from "@/lib/types";
 import { formatPct } from "@/lib/utils";
 
@@ -48,61 +50,7 @@ export default function RiskMetricsPage() {
 }
 
 function RiskResults({ data }: { data: RiskMetricsResponse }) {
-  const metrics = [
-    {
-      label: "Annualized Return",
-      value: formatPct(data.annualized_return),
-      color: data.annualized_return >= 0 ? "green" : "red",
-    },
-    {
-      label: "Annualized Volatility",
-      value: formatPct(data.annualized_volatility),
-      color: "amber",
-    },
-    {
-      label: "Sharpe Ratio",
-      value: data.sharpe_ratio.toFixed(2),
-      subtitle: "> 1.0 is good, > 2.0 is excellent",
-      color: data.sharpe_ratio >= 1 ? "green" : "amber",
-    },
-    {
-      label: "Sortino Ratio",
-      value: data.sortino_ratio.toFixed(2),
-      subtitle: "Penalizes only downside risk",
-      color: data.sortino_ratio >= 1 ? "green" : "amber",
-    },
-    {
-      label: "Max Drawdown",
-      value: formatPct(data.max_drawdown),
-      subtitle: data.max_drawdown_duration_days
-        ? `${data.max_drawdown_duration_days} trading days`
-        : undefined,
-      color: "red",
-    },
-    {
-      label: "Value at Risk (95%)",
-      value: formatPct(data.var_95),
-      subtitle: "Annualized worst-case at 95% confidence",
-      color: "red",
-    },
-    {
-      label: "CVaR / Expected Shortfall",
-      value: formatPct(data.cvar_95),
-      subtitle: "Average loss beyond VaR threshold",
-      color: "red",
-    },
-    {
-      label: "Beta",
-      value: data.beta?.toFixed(2) ?? "N/A",
-      subtitle: "Sensitivity to S&P 500",
-      color: "blue",
-    },
-  ] satisfies Array<{
-    label: string;
-    value: string;
-    subtitle?: string;
-    color: string;
-  }>;
+  const recommendations = generateRiskRecommendations(data);
 
   return (
     <div>
@@ -110,41 +58,104 @@ function RiskResults({ data }: { data: RiskMetricsResponse }) {
         Portfolio: {data.tickers.join(", ")}
       </h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((m) => (
-          <MetricCard
-            key={m.label}
-            label={m.label}
-            value={m.value}
-            subtitle={m.subtitle}
-            color={m.color as "green" | "red" | "amber" | "blue"}
-          />
-        ))}
+        <SmartMetricCard
+          metricKey="annualized_return"
+          value={data.annualized_return}
+          rawLabel="Annualized Return"
+          rawValue={formatPct(data.annualized_return)}
+          color={data.annualized_return >= 0 ? "green" : "red"}
+        />
+        <SmartMetricCard
+          metricKey="annualized_volatility"
+          value={data.annualized_volatility}
+          rawLabel="Annualized Volatility"
+          rawValue={formatPct(data.annualized_volatility)}
+          color="amber"
+        />
+        <SmartMetricCard
+          metricKey="sharpe_ratio"
+          value={data.sharpe_ratio}
+          rawLabel="Sharpe Ratio"
+          rawValue={data.sharpe_ratio.toFixed(2)}
+          subtitle="> 1.0 is good, > 2.0 is excellent"
+          color={data.sharpe_ratio >= 1 ? "green" : "amber"}
+        />
+        <SmartMetricCard
+          metricKey="sortino_ratio"
+          value={data.sortino_ratio}
+          rawLabel="Sortino Ratio"
+          rawValue={data.sortino_ratio.toFixed(2)}
+          subtitle="Penalizes only downside risk"
+          color={data.sortino_ratio >= 1 ? "green" : "amber"}
+        />
+        <SmartMetricCard
+          metricKey="max_drawdown"
+          value={data.max_drawdown}
+          rawLabel="Max Drawdown"
+          rawValue={formatPct(data.max_drawdown)}
+          subtitle={
+            data.max_drawdown_duration_days
+              ? `${data.max_drawdown_duration_days} trading days`
+              : undefined
+          }
+          color="red"
+        />
+        <SmartMetricCard
+          metricKey="var_95"
+          value={data.var_95}
+          rawLabel="Value at Risk (95%)"
+          rawValue={formatPct(data.var_95)}
+          subtitle="Annualized worst-case at 95% confidence"
+          color="red"
+        />
+        <SmartMetricCard
+          metricKey="cvar_95"
+          value={data.cvar_95}
+          rawLabel="CVaR / Expected Shortfall"
+          rawValue={formatPct(data.cvar_95)}
+          subtitle="Average loss beyond VaR threshold"
+          color="red"
+        />
+        <SmartMetricCard
+          metricKey="beta"
+          value={data.beta}
+          rawLabel="Beta"
+          rawValue={data.beta?.toFixed(2) ?? "N/A"}
+          subtitle="Sensitivity to S&P 500"
+          color="blue"
+        />
       </div>
 
       {data.treynor_ratio !== null && (
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <MetricCard
-            label="Treynor Ratio"
-            value={data.treynor_ratio.toFixed(4)}
+          <SmartMetricCard
+            metricKey="treynor_ratio"
+            value={data.treynor_ratio}
+            rawLabel="Treynor Ratio"
+            rawValue={data.treynor_ratio.toFixed(4)}
             subtitle="Excess return per unit of systematic risk"
           />
-          <MetricCard
-            label="Alpha"
-            value={data.alpha?.toFixed(4) ?? "N/A"}
+          <SmartMetricCard
+            metricKey="alpha"
+            value={data.alpha}
+            rawLabel="Alpha"
+            rawValue={data.alpha?.toFixed(4) ?? "N/A"}
             subtitle="Excess return above CAPM prediction"
-            color={
-              data.alpha && data.alpha > 0 ? "green" : "red"
-            }
+            color={data.alpha && data.alpha > 0 ? "green" : "red"}
           />
           {data.calmar_ratio && (
-            <MetricCard
-              label="Calmar Ratio"
-              value={data.calmar_ratio.toFixed(2)}
+            <SmartMetricCard
+              metricKey="calmar_ratio"
+              value={data.calmar_ratio}
+              rawLabel="Calmar Ratio"
+              rawValue={data.calmar_ratio.toFixed(2)}
               subtitle="Return / Max Drawdown"
             />
           )}
         </div>
       )}
+
+      <RecommendationPanel recommendations={recommendations} />
     </div>
   );
 }

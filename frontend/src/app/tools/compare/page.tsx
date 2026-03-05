@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import TickerInput from "@/components/ui/ticker-input";
-import MetricCard from "@/components/ui/metric-card";
+import RecommendationPanel from "@/components/ui/recommendation-panel";
+import { generateCompareRecommendations } from "@/lib/recommendation-engine";
 import { formatCurrency, formatCompact, formatPct } from "@/lib/utils";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -102,65 +103,71 @@ export default function ComparePage() {
       )}
 
       {data.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-gray-800">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-900">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-400">
-                  Metric
-                </th>
-                {data.map((d) => (
-                  <th
-                    key={d.ticker}
-                    className="px-4 py-3 text-right text-xs font-medium uppercase text-white"
-                  >
-                    {d.ticker}
-                    <div className="text-[10px] font-normal text-gray-500">
-                      {d.name}
-                    </div>
+        <>
+          <div className="overflow-hidden rounded-xl border border-gray-800">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-400">
+                    Metric
                   </th>
+                  {data.map((d) => (
+                    <th
+                      key={d.ticker}
+                      className="px-4 py-3 text-right text-xs font-medium uppercase text-white"
+                    >
+                      {d.ticker}
+                      <div className="text-[10px] font-normal text-gray-500">
+                        {d.name}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {metrics.map((m) => (
+                  <tr key={m.key} className="border-t border-gray-800">
+                    <td className="px-4 py-2 text-gray-400">{m.label}</td>
+                    {data.map((d) => (
+                      <td
+                        key={d.ticker}
+                        className="px-4 py-2 text-right text-gray-300"
+                      >
+                        {m.fmt(d[m.key] as never)}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {metrics.map((m) => (
-                <tr key={m.key} className="border-t border-gray-800">
-                  <td className="px-4 py-2 text-gray-400">{m.label}</td>
+                <tr className="border-t border-gray-800">
+                  <td className="px-4 py-2 text-gray-400">Sector</td>
                   {data.map((d) => (
                     <td
                       key={d.ticker}
                       className="px-4 py-2 text-right text-gray-300"
                     >
-                      {m.fmt(d[m.key] as never)}
+                      {d.sector}
                     </td>
                   ))}
                 </tr>
-              ))}
-              <tr className="border-t border-gray-800">
-                <td className="px-4 py-2 text-gray-400">Sector</td>
-                {data.map((d) => (
-                  <td
-                    key={d.ticker}
-                    className="px-4 py-2 text-right text-gray-300"
-                  >
-                    {d.sector}
-                  </td>
-                ))}
-              </tr>
-              <tr className="border-t border-gray-800">
-                <td className="px-4 py-2 text-gray-400">Type</td>
-                {data.map((d) => (
-                  <td
-                    key={d.ticker}
-                    className="px-4 py-2 text-right text-gray-300"
-                  >
-                    {d.type}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                <tr className="border-t border-gray-800">
+                  <td className="px-4 py-2 text-gray-400">Type</td>
+                  {data.map((d) => (
+                    <td
+                      key={d.ticker}
+                      className="px-4 py-2 text-right text-gray-300"
+                    >
+                      {d.type}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <RecommendationPanel
+            recommendations={generateCompareRecommendations(data)}
+          />
+        </>
       )}
     </div>
   );

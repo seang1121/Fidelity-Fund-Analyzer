@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { usePreferences } from "@/contexts/preferences-context";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard" },
@@ -23,16 +24,17 @@ const NAV_ITEMS = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { preferences, setMode } = usePreferences();
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 font-bold text-gray-950">
-            FA
+            IC
           </div>
-          <span className="text-lg font-semibold text-white">
-            Fund Analyzer
+          <span className="hidden text-lg font-semibold text-white sm:block">
+            Investment Command Center
           </span>
         </Link>
 
@@ -73,6 +75,30 @@ export default function Navbar() {
               </Link>
             )
           )}
+
+          {/* Simple / Advanced toggle */}
+          <div className="ml-3 flex items-center rounded-lg border border-gray-700 bg-gray-900 p-0.5">
+            <button
+              onClick={() => setMode("simple")}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+                preferences.mode === "simple"
+                  ? "bg-emerald-500 text-white shadow-sm"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Simple
+            </button>
+            <button
+              onClick={() => setMode("advanced")}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+                preferences.mode === "advanced"
+                  ? "bg-emerald-500 text-white shadow-sm"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Advanced
+            </button>
+          </div>
         </div>
       </div>
     </nav>
